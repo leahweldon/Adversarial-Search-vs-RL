@@ -53,6 +53,13 @@ class TicTacToe:
         if self.is_terminal():
             return []
         return [i for i, cell in enumerate(self.board) if cell == 0]
+    
+    def available_actions(self) -> List[Action]:
+        """
+        Same as legal_actions, but reads a bit more naturally in some agents
+
+        """
+        return self.legal_actions()
 
     def apply_action(self, action: Action) -> None:
         """Apply a move for the current player."""

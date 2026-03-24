@@ -45,6 +45,10 @@ class Connect4:
         if self.is_terminal():
             return []
         return [col for col in range(self.cols) if self.board[0][col] == 0]
+    
+    def available_actions(self) -> List[Action]:
+        """ Alias for legal_actions"""
+        return self.legal_actions()
 
     def apply_action(self, action: Action) -> None:
         """Drop a piece into the selected column."""
