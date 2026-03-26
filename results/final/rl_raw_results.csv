@@ -1,0 +1,13 @@
+category,game,algorithm,opponent,seed,win_rate,wins,draws,losses,policy_size
+rl_vs_opponent,tictactoe,tabular_q_learning,default_opponent,7,0.5,100.0,100.0,0.0,113
+rl_vs_opponent,tictactoe,tabular_q_learning,default_opponent,21,0.5,100.0,100.0,0.0,112
+rl_vs_opponent,tictactoe,tabular_q_learning,default_opponent,42,0.5,100.0,100.0,0.0,113
+rl_vs_opponent,tictactoe,dqn,default_opponent,7,0.5,100.0,100.0,0.0,0
+rl_vs_opponent,tictactoe,dqn,default_opponent,21,0.5,100.0,100.0,0.0,0
+rl_vs_opponent,tictactoe,dqn,default_opponent,42,0.5,100.0,100.0,0.0,0
+rl_vs_opponent,connect4,tabular_q_learning,random_opponent,7,0.635,127.0,0.0,73.0,129631
+rl_vs_opponent,connect4,tabular_q_learning,random_opponent,21,0.63,126.0,0.0,74.0,126980
+rl_vs_opponent,connect4,tabular_q_learning,random_opponent,42,0.72,144.0,0.0,56.00000000000001,118923
+rl_vs_opponent,connect4,dqn,random_opponent,7,0.745,149.0,0.0,51.0,0
+rl_vs_opponent,connect4,dqn,random_opponent,21,0.725,145.0,0.0,55.00000000000001,0
+rl_vs_opponent,connect4,dqn,random_opponent,42,0.7,140.0,0.0,60.0,0

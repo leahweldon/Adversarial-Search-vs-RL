@@ -1,0 +1,5 @@
+category,Game,Algorithm,Opponent,runs,Mean Win Rate,Win Rate Std,Mean Wins,wins_std,draws_mean,draws_std,Mean Losses,losses_std,Mean Policy Size,policy_size_std
+rl_vs_opponent,tictactoe,tabular_q_learning,default_opponent,3,1.0,0.0,200.0,0.0,0.0,0.0,0.0,0.0,97.33333333333331,0.5773502691896257
+rl_vs_opponent,tictactoe,dqn,default_opponent,3,1.0,0.0,200.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+rl_vs_opponent,connect4,tabular_q_learning,random_opponent,3,0.8766666666666666,0.033291640592397,175.33333333333334,6.6583281184793925,0.0,0.0,24.666666666666668,6.6583281184793925,82373.66666666667,5395.64716538557
+rl_vs_opponent,connect4,dqn,random_opponent,3,0.6583333333333333,0.0125830573921179,131.66666666666666,2.5166114784235836,0.0,0.0,68.33333333333333,2.516611478423583,0.0,0.0

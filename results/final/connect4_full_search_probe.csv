@@ -1,0 +1,5 @@
+game,board_label,algorithm,timeout_seconds,completed,timed_out_inside_search,elapsed_seconds,selected_action,nodes_visited,nodes_per_second,cutoffs,max_depth_reached,notes
+connect4,opening,minimax,1800,False,True,1800.107228790992,,26635498,14796.617431445586,0,42,Search exceeded configured deadline inside recursive search.
+connect4,opening,alpha_beta,1800,False,True,1800.0793088749633,,26276063,14597.169619388798,12351583,42,Search exceeded configured deadline inside recursive search.
+connect4,midgame,minimax,1800,False,True,1800.0525625420269,,16600206,9222.067369275737,0,28,Search exceeded configured deadline inside recursive search.
+connect4,midgame,alpha_beta,1800,False,True,1800.098078250012,,13934778,7741.121535748136,5661638,28,Search exceeded configured deadline inside recursive search.

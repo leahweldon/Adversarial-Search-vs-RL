@@ -1,0 +1,6 @@
+category,game,algorithm,depth_limit,player1_win_rate,player2_win_rate,draw_rate,player1_avg_move_time,player1_nodes,player1_cutoffs,player1_max_depth
+search_vs_default,tictactoe,minimax,full,0.0,0.0,1.0,0.17671232592482639,30698850,0,9
+search_vs_default,tictactoe,alpha_beta,full,0.0,0.0,1.0,0.008530645178139416,1351950,504050,9
+search_vs_default,connect4,minimax,3,1.0,0.0,0.0,0.03034316276338393,148425,0,3
+search_vs_default,connect4,alpha_beta,3,1.0,0.0,0.0,0.014682042448942117,75415,8629,3
+search_vs_default,connect4,alpha_beta,4,0.95,0.03333333333333333,0.016666666666666666,0.06047917009082665,562083,78106,4

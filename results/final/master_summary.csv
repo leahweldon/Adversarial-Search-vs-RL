@@ -1,0 +1,10 @@
+game,algorithm,setting,opponent,depth_limit,win_rate,draw_rate,avg_move_time,notes
+tictactoe,minimax,search_vs_default,default_opponent,full,0.0,1.0,0.17671232592482639,Deterministic search evaluation
+tictactoe,alpha_beta,search_vs_default,default_opponent,full,0.0,1.0,0.008530645178139416,Deterministic search evaluation
+connect4,minimax,search_vs_default,default_opponent,3,1.0,0.0,0.03034316276338393,Deterministic search evaluation
+connect4,alpha_beta,search_vs_default,default_opponent,3,1.0,0.0,0.014682042448942117,Deterministic search evaluation
+connect4,alpha_beta,search_vs_default,default_opponent,4,0.95,0.016666666666666666,0.06047917009082665,Deterministic search evaluation
+tictactoe,tabular_q_learning,rl_vs_opponent,default_opponent,,0.5,0.5,,Mean over 3 seeded RL runs
+tictactoe,dqn,rl_vs_opponent,default_opponent,,0.5,0.5,,Mean over 3 seeded RL runs
+connect4,tabular_q_learning,rl_vs_opponent,random_opponent,,0.6616666666666666,0.0,,Mean over 3 seeded RL runs
+connect4,dqn,rl_vs_opponent,random_opponent,,0.7233333333333333,0.0,,Mean over 3 seeded RL runs

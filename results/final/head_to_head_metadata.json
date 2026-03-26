@@ -1,0 +1,21 @@
+{
+  "seed": 42,
+  "tictactoe_games_per_matchup": 50,
+  "connect4_games_per_matchup": 30,
+  "tictactoe_model_loading": "load saved model if present, otherwise train and save",
+  "connect4_model_loading": "load saved model if present, otherwise train and save",
+  "connect4_search_agents": [
+    "minimax_depth3",
+    "alpha_beta_depth3",
+    "alpha_beta_depth4"
+  ],
+  "connect4_rl_agents": [
+    "tabular_q_learning",
+    "dqn"
+  ],
+  "notes": [
+    "All head-to-head matchups alternate starting player.",
+    "Connect 4 plain minimax is represented using depth-limited minimax at depth 3.",
+    "Saved models are reused where possible to improve reproducibility and reduce rerun cost."
+  ]
+}

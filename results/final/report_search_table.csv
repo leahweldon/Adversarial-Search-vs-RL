@@ -1,0 +1,6 @@
+category,Game,Algorithm,Depth Limit,Win Rate,player2_win_rate,Draw Rate,Average Move Time,Nodes Visited,Cutoffs,Max Depth
+search_vs_default,tictactoe,minimax,full,0.0,0.0,1.0,0.1795901653602616,30698850,0,9
+search_vs_default,tictactoe,alpha_beta,full,0.0,0.0,1.0,0.0085776773179208,1351950,504050,9
+search_vs_default,connect4,minimax,3,1.0,0.0,0.0,0.0284444895317994,148425,0,3
+search_vs_default,connect4,alpha_beta,3,1.0,0.0,0.0,0.0146689420960025,75415,8629,3
+search_vs_default,connect4,alpha_beta,4,0.95,0.0333333333333333,0.0166666666666666,0.0608091156817805,562083,78106,4

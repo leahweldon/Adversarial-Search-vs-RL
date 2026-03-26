@@ -1,20 +1,23 @@
 from __future__ import annotations
 
 import math
+import time
 from dataclasses import dataclass
-from typing import Optional
+from typing import Callable, Optional
 
 from src.agents.base_agent import BaseAgent
 from src.games.connect4 import Connect4
 from src.games.tictactoe import TicTacToe
 
 
+class SearchTimeoutError(Exception):
+    """Raised when search exceeds its configured deadline """
+    pass
+
+
 @dataclass
 class SearchStats:
-    """
-    Stores simple search statistics for one decision
-    These are useful later when comparing plain minimax with alpha-beta pruning
-    """
+    """Stores simple search statistics for one decision"""
     nodes_visited: int = 0
     cutoffs: int = 0
     max_depth_reached: int = 0
@@ -24,9 +27,7 @@ class MinimaxAgent(BaseAgent):
     """
     Minimax agent that can optionally use alpha-beta pruning
 
-    This class is designed to work for both Tic Tac Toe and Connect 4
-    For Tic Tac Toe, full-depth search is feasible
-    For Connect 4, you will usually want to set a depth limit
+    Works for both Tic Tac Toe and Connect 4
     """
 
     def __init__(
@@ -40,6 +41,28 @@ class MinimaxAgent(BaseAgent):
         self.depth_limit = depth_limit
         self.last_search_stats = SearchStats()
 
+        self.search_deadline: Optional[float] = None
+        self.progress_callback: Optional[Callable[[SearchStats], None]] = None
+        self._sync_interval_nodes = 5000
+
+    def configure_probe(
+        self,
+        search_deadline: Optional[float] = None,
+        progress_callback: Optional[Callable[[SearchStats], None]] = None,
+    ) -> None:
+        """
+        Configure optional deadline/progress reporting for long-running searches
+        """
+        self.search_deadline = search_deadline
+        self.progress_callback = progress_callback
+
+    def clear_probe_configuration(self) -> None:
+        """
+        Clear any previously configured deadline/progress hooks
+        """
+        self.search_deadline = None
+        self.progress_callback = None
+
     def select_action(self, game: TicTacToe | Connect4) -> int:
         legal_actions = game.available_actions()
         if not legal_actions:
@@ -47,6 +70,8 @@ class MinimaxAgent(BaseAgent):
 
         root_player = game.current_player
         self.last_search_stats = SearchStats()
+        self._sync_progress(force=True)
+        self._check_timeout()
 
         best_value = -math.inf
         best_action = legal_actions[0]
@@ -55,6 +80,8 @@ class MinimaxAgent(BaseAgent):
         beta = math.inf
 
         for action in legal_actions:
+            self._check_timeout()
+
             next_state = game.next_state(action)
 
             if self.use_alpha_beta:
@@ -79,6 +106,7 @@ class MinimaxAgent(BaseAgent):
                 best_value = value
                 best_action = action
 
+        self._sync_progress(force=True)
         return best_action
 
     def _max_value(
@@ -90,6 +118,7 @@ class MinimaxAgent(BaseAgent):
         beta: Optional[float],
     ) -> float:
         self._update_stats(depth)
+        self._check_timeout()
 
         if self._should_stop(game, depth):
             return self._evaluate(game, root_player, depth)
@@ -97,6 +126,8 @@ class MinimaxAgent(BaseAgent):
         value = -math.inf
 
         for action in game.available_actions():
+            self._check_timeout()
+
             child = game.next_state(action)
             value = max(
                 value,
@@ -107,6 +138,7 @@ class MinimaxAgent(BaseAgent):
                 alpha = max(alpha, value)
                 if alpha >= beta:
                     self.last_search_stats.cutoffs += 1
+                    self._sync_progress()
                     break
 
         return value
@@ -120,6 +152,7 @@ class MinimaxAgent(BaseAgent):
         beta: Optional[float],
     ) -> float:
         self._update_stats(depth)
+        self._check_timeout()
 
         if self._should_stop(game, depth):
             return self._evaluate(game, root_player, depth)
@@ -127,6 +160,8 @@ class MinimaxAgent(BaseAgent):
         value = math.inf
 
         for action in game.available_actions():
+            self._check_timeout()
+
             child = game.next_state(action)
             value = min(
                 value,
@@ -137,6 +172,7 @@ class MinimaxAgent(BaseAgent):
                 beta = min(beta, value)
                 if alpha >= beta:
                     self.last_search_stats.cutoffs += 1
+                    self._sync_progress()
                     break
 
         return value
@@ -152,7 +188,7 @@ class MinimaxAgent(BaseAgent):
 
     def _evaluate(self, game: TicTacToe | Connect4, root_player: int, depth: int) -> float:
         """
-        Evaluate a position from the root player's perspective
+        Evaluate position from the root player's perspective
 
         For terminal states:
         - win: strong positive score
@@ -184,8 +220,6 @@ class MinimaxAgent(BaseAgent):
         """
         Simple positional evaluation for depth-limited Tic Tac Toe
 
-        This is mostly a fallback because full search is cheap for Tic Tac Toe,
-        but having an evaluation function keeps the agent general and complete
         """
         score = 0
         opponent = -root_player
@@ -222,6 +256,7 @@ class MinimaxAgent(BaseAgent):
         Rewards:
         - centre control
         - promising 2/3-in-a-row windows
+
         Penalises:
         - opponent threats
         """
@@ -283,3 +318,22 @@ class MinimaxAgent(BaseAgent):
             self.last_search_stats.max_depth_reached,
             depth,
         )
+        self._sync_progress()
+
+    def _check_timeout(self) -> None:
+        """
+        Raise timeout if search deadline has been configured and exceeded
+        """
+        if self.search_deadline is not None and time.perf_counter() >= self.search_deadline:
+            self._sync_progress(force=True)
+            raise SearchTimeoutError("Search exceeded configured deadline.")
+
+    def _sync_progress(self, force: bool = False) -> None:
+        """
+        Periodically publish current search stats to any configured callback
+        """
+        if self.progress_callback is None:
+            return
+
+        if force or self.last_search_stats.nodes_visited % self._sync_interval_nodes == 0:
+            self.progress_callback(self.last_search_stats)

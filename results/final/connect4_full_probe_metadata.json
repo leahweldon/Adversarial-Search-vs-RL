@@ -1,0 +1,17 @@
+{
+  "experiment": "connect4_full_search_probe",
+  "boards": [
+    "opening",
+    "midgame"
+  ],
+  "algorithms": [
+    "minimax",
+    "alpha_beta"
+  ],
+  "timeout_seconds": 1800,
+  "notes": [
+    "This experiment probes unrestricted Connect 4 search from selected board states.",
+    "The goal is to provide evidence that full minimax search is infeasible on standard hardware.",
+    "Progress statistics are captured live during recursive search via agent probe callbacks."
+  ]
+}

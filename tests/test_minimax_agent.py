@@ -1,4 +1,8 @@
-from src.agents.minimax_agent import MinimaxAgent
+import time
+
+import pytest
+
+from src.agents.minimax_agent import MinimaxAgent, SearchTimeoutError
 from src.games.connect4 import Connect4
 from src.games.tictactoe import TicTacToe
 
@@ -93,3 +97,43 @@ def test_depth_limited_connect4_takes_immediate_win():
     action = agent.select_action(game)
 
     assert action == 3
+
+
+def test_probe_configuration_can_be_set_and_cleared():
+    agent = MinimaxAgent(use_alpha_beta=True, depth_limit=3)
+
+    callback_calls = []
+
+    def callback(stats):
+        callback_calls.append(stats.nodes_visited)
+
+    deadline = time.perf_counter() + 1.0
+    agent.configure_probe(
+        search_deadline=deadline,
+        progress_callback=callback,
+    )
+
+    assert agent.search_deadline == deadline
+    assert agent.progress_callback is callback
+
+    agent.clear_probe_configuration()
+
+    assert agent.search_deadline is None
+    assert agent.progress_callback is None
+
+
+def test_timeout_raises_search_timeout_error():
+    game = TicTacToe(
+        board=[
+            0, 0, 0,
+            0, 0, 0,
+            0, 0, 0,
+        ],
+        current_player=1,
+    )
+
+    agent = MinimaxAgent(use_alpha_beta=False)
+    agent.configure_probe(search_deadline=time.perf_counter() - 0.001)
+
+    with pytest.raises(SearchTimeoutError):
+        agent.select_action(game)

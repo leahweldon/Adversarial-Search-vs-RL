@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+import json
 import random
 from collections import defaultdict
+from pathlib import Path
 from typing import DefaultDict, Dict, List, Optional
 
 from src.agents.base_agent import BaseAgent
@@ -19,7 +21,7 @@ class QLearningAgent(BaseAgent):
     Q-values are stored as:
         Q[state_key][action] = value
 
-    The agent supports both training-time epsilon-greedy behaviour and
+    Agent supports both training-time epsilon-greedy behaviour and
     evaluation-time greedy action selection
     """
 
@@ -42,7 +44,7 @@ class QLearningAgent(BaseAgent):
     def select_action(self, game: GameType, training: bool = False) -> int:
         """
         Select action using epsilon-greedy exploration during training,
-        or greedy selection during evaluation.
+        or greedy selection during evaluation
         """
         legal_actions = game.available_actions()
         if not legal_actions:
@@ -93,6 +95,56 @@ class QLearningAgent(BaseAgent):
     def decay_epsilon(self, decay_rate: float, min_epsilon: float) -> None:
         self.epsilon = max(min_epsilon, self.epsilon * decay_rate)
 
+    def save(self, filepath: str) -> None:
+        """
+        Save Q-table and agent metadata to disk as JSON
+        """
+        path = Path(filepath)
+        path.parent.mkdir(parents=True, exist_ok=True)
+
+        serialisable_q_table = {}
+        for state_key, action_values in self.q_table.items():
+            serialisable_q_table[str(state_key)] = {
+                str(action): value for action, value in action_values.items()
+            }
+
+        payload = {
+            "name": self.name,
+            "learning_rate": self.learning_rate,
+            "discount_factor": self.discount_factor,
+            "epsilon": self.epsilon,
+            "q_table": serialisable_q_table,
+        }
+
+        with path.open("w", encoding="utf-8") as f:
+            json.dump(payload, f, indent=2)
+
+    def load(self, filepath: str) -> None:
+        """
+        Load Q-table and agent metadata from disk
+        """
+        path = Path(filepath)
+        with path.open("r", encoding="utf-8") as f:
+            payload = json.load(f)
+
+        self.name = payload["name"]
+        self.learning_rate = payload["learning_rate"]
+        self.discount_factor = payload["discount_factor"]
+        self.epsilon = payload["epsilon"]
+
+        self.q_table.clear()
+
+        for state_str, action_values in payload["q_table"].items():
+            state_key = tuple(
+                int(x.strip())
+                for x in state_str.strip("()").split(",")
+                if x.strip()
+            )
+            self.q_table[state_key] = {
+                int(action): float(value)
+                for action, value in action_values.items()
+            }
+
     def _ensure_state_actions_exist(self, state_key: StateKey, legal_actions: List[int]) -> None:
         for action in legal_actions:
             if action not in self.q_table[state_key]:
@@ -101,14 +153,19 @@ class QLearningAgent(BaseAgent):
     def _best_action(self, state_key: StateKey, legal_actions: List[int]) -> int:
         """
         Return greedy action
-        If multiple actions tie, choose randomly among the best ones
+
+        If multiple actions tie, choose randomly among best ones
         """
         best_q = max(self.q_table[state_key][action] for action in legal_actions)
-        best_actions = [action for action in legal_actions if self.q_table[state_key][action] == best_q]
+        best_actions = [
+            action
+            for action in legal_actions
+            if self.q_table[state_key][action] == best_q
+        ]
         return self.rng.choice(best_actions)
 
     def policy_size(self) -> int:
         """
-        Number of distinct states with at least one stored Q-value
+        Return number of distinct states with at least one stored Q-value
         """
         return len(self.q_table)
