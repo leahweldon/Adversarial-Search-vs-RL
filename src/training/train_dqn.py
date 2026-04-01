@@ -40,12 +40,41 @@ def _reward_from_result(result: int, learner_player: int) -> float:
     return -1.0
 
 
+def _connect4_shape_reward(game: Connect4, player: int) -> float:
+    """small bonus for 3-in-a-row threats, penalty if opponent has one"""
+    board = game.board
+    rows, cols = game.rows, game.cols
+    opponent = -player
+    reward = 0.0
+    windows = []
+    for row in range(rows):
+        for col in range(cols - 3):
+            windows.append([board[row][col + i] for i in range(4)])
+    for row in range(rows - 3):
+        for col in range(cols):
+            windows.append([board[row + i][col] for i in range(4)])
+    for row in range(rows - 3):
+        for col in range(cols - 3):
+            windows.append([board[row + i][col + i] for i in range(4)])
+    for row in range(3, rows):
+        for col in range(cols - 3):
+            windows.append([board[row - i][col + i] for i in range(4)])
+    for window in windows:
+        pc, oc, ec = window.count(player), window.count(opponent), window.count(0)
+        if pc == 3 and ec == 1:
+            reward += 0.05
+        elif oc == 3 and ec == 1:
+            reward -= 0.05
+    return reward
+
+
 def train_dqn_agent(
     agent: DQNAgent,
     game_factory: GameFactory,
     opponent: BaseAgent,
     episodes: int,
     learner_player: int = 1,
+    use_reward_shaping: bool = False,
 ) -> DQNTrainingStats:
     """
     Train DQN against fixed opponent
@@ -69,6 +98,9 @@ def train_dqn_agent(
             state = agent.game_to_state_vector(game)
             action = agent.select_action(game, training=True)
             game.apply_action(action)
+
+            # shaping measured here: after learner's move, before opponent acts
+            step_reward = _connect4_shape_reward(game, learner_player) if use_reward_shaping and isinstance(game, Connect4) else 0.0
 
             # Learner wins or draws immediately
             if game.is_terminal():
@@ -118,13 +150,12 @@ def train_dqn_agent(
             next_state = agent.game_to_state_vector(game)
             next_legal_actions = game.available_actions()
 
-            reward = 0.0
-            total_episode_reward += reward
+            total_episode_reward += step_reward
 
             agent.store_experience(
                 state=state,
                 action=action,
-                reward=reward,
+                reward=step_reward,
                 next_state=next_state,
                 done=False,
                 next_legal_actions=next_legal_actions,
@@ -160,6 +191,7 @@ def train_dqn_agent_mixed_seats(
     game_factory: GameFactory,
     opponent: BaseAgent,
     episodes: int,
+    use_reward_shaping: bool = False,
 ) -> DQNTrainingStats:
     """
     Train same DQN agent while alternating whether it plays as
@@ -176,6 +208,7 @@ def train_dqn_agent_mixed_seats(
             opponent=opponent,
             episodes=1,
             learner_player=learner_player,
+            use_reward_shaping=use_reward_shaping,
         )
 
         combined_stats.wins += episode_stats.wins

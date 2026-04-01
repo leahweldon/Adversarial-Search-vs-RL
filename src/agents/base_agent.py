@@ -6,7 +6,7 @@ from typing import Any
 
 class BaseAgent(ABC):
     """
-    Small shared interface for all agents.
+    Small shared interface for all agents
     
     """
 
@@ -16,6 +16,6 @@ class BaseAgent(ABC):
     @abstractmethod
     def select_action(self, game: Any) -> int:
         """
-        Return the chosen action for the current game state.
+        Return chosen action for current game state
         """
         raise NotImplementedError

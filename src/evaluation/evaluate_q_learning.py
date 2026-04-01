@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Callable
+from typing import Callable, Tuple
 
 from src.agents.base_agent import BaseAgent
 from src.agents.q_learning_agent import QLearningAgent
@@ -60,3 +60,15 @@ def evaluate_q_agent(
         agent.set_epsilon(original_epsilon)
 
     return stats
+
+
+def evaluate_q_agent_by_seat(
+    agent: QLearningAgent,
+    game_factory: GameFactory,
+    opponent: BaseAgent,
+    games: int,
+) -> Tuple[EvaluationStats, EvaluationStats]:
+    """evaluate separately as P1 and P2, returns (p1_stats, p2_stats)"""
+    p1_stats = evaluate_q_agent(agent, game_factory, opponent, games, learner_player=1)
+    p2_stats = evaluate_q_agent(agent, game_factory, opponent, games, learner_player=-1)
+    return p1_stats, p2_stats

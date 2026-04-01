@@ -28,18 +28,16 @@ class Experience:
 
 
 class DQNetwork(nn.Module):
-    """
-    Small feedforward network for board-value estimation
-    """
+    """Feedforward network for Q-value estimation"""
 
-    def __init__(self, input_dim: int, output_dim: int) -> None:
+    def __init__(self, input_dim: int, output_dim: int, hidden_size: int = 128) -> None:
         super().__init__()
         self.model = nn.Sequential(
-            nn.Linear(input_dim, 128),
+            nn.Linear(input_dim, hidden_size),
             nn.ReLU(),
-            nn.Linear(128, 128),
+            nn.Linear(hidden_size, hidden_size),
             nn.ReLU(),
-            nn.Linear(128, output_dim),
+            nn.Linear(hidden_size, output_dim),
         )
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
@@ -68,6 +66,7 @@ class DQNAgent(BaseAgent):
         batch_size: int = 64,
         replay_buffer_size: int = 10000,
         target_update_frequency: int = 200,
+        hidden_size: int = 128,
         seed: Optional[int] = None,
         device: Optional[str] = None,
     ) -> None:
@@ -81,14 +80,15 @@ class DQNAgent(BaseAgent):
         self.min_epsilon = min_epsilon
         self.batch_size = batch_size
         self.target_update_frequency = target_update_frequency
+        self.hidden_size = hidden_size
         self.rng = random.Random(seed)
 
         self.device = torch.device(
             device if device is not None else ("cuda" if torch.cuda.is_available() else "cpu")
         )
 
-        self.policy_net = DQNetwork(state_size, action_size).to(self.device)
-        self.target_net = DQNetwork(state_size, action_size).to(self.device)
+        self.policy_net = DQNetwork(state_size, action_size, hidden_size=hidden_size).to(self.device)
+        self.target_net = DQNetwork(state_size, action_size, hidden_size=hidden_size).to(self.device)
         self.target_net.load_state_dict(self.policy_net.state_dict())
         self.target_net.eval()
 
@@ -185,9 +185,7 @@ class DQNAgent(BaseAgent):
         self.epsilon = epsilon
 
     def save(self, filepath: str) -> None:
-        """
-        Save trained DQN model and metadata
-        """
+        """Save trained DQN model and metadata"""
         path = Path(filepath)
         path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -201,6 +199,7 @@ class DQNAgent(BaseAgent):
                 "epsilon_decay": self.epsilon_decay,
                 "min_epsilon": self.min_epsilon,
                 "training_steps": self.training_steps,
+                "hidden_size": self.hidden_size,
                 "policy_net_state_dict": self.policy_net.state_dict(),
                 "target_net_state_dict": self.target_net.state_dict(),
                 "optimizer_state_dict": self.optimizer.state_dict(),
@@ -209,10 +208,15 @@ class DQNAgent(BaseAgent):
         )
 
     def load(self, filepath: str) -> None:
-        """
-        Load trained DQN model and metadata
-        """
+        """Load trained DQN model and metadata"""
         checkpoint = torch.load(filepath, map_location=self.device)
+
+        checkpoint_hidden_size = checkpoint.get("hidden_size", 128)
+        if checkpoint_hidden_size != self.hidden_size:
+            raise ValueError(
+                f"Hidden size mismatch while loading DQN model: "
+                f"checkpoint has {checkpoint_hidden_size}, agent expects {self.hidden_size}."
+            )
 
         self.name = checkpoint["name"]
         self.discount_factor = checkpoint["discount_factor"]
@@ -228,7 +232,7 @@ class DQNAgent(BaseAgent):
     @staticmethod
     def game_to_state_vector(game: GameType) -> List[float]:
         """
-        Convert game state into a flat numeric vector for neural network
+        Convert game state into flat numeric vector for neural network
         """
         if isinstance(game, TicTacToe):
             return [float(cell) for cell in game.board] + [float(game.current_player)]

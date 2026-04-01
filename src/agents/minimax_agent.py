@@ -92,7 +92,6 @@ class MinimaxAgent(BaseAgent):
                     alpha=alpha,
                     beta=beta,
                 )
-                alpha = max(alpha, best_value)
             else:
                 value = self._min_value(
                     next_state,
@@ -105,6 +104,9 @@ class MinimaxAgent(BaseAgent):
             if value > best_value:
                 best_value = value
                 best_action = action
+
+            if self.use_alpha_beta:
+                alpha = max(alpha, best_value)
 
         self._sync_progress(force=True)
         return best_action

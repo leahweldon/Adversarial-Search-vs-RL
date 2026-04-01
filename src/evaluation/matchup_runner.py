@@ -115,7 +115,7 @@ def run_matchup(
     alternate_starting_player: bool = True,
 ) -> MatchupStats:
     """
-    Runs a matchup and reports results from the perspective of the seat assignment,
+    Runs matchup and reports results from perspective of the seat assignment,
     not the algorithm names. If alternating is enabled, agent_a and agent_b swap seats
     every other game.
     """

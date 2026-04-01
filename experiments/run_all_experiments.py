@@ -92,7 +92,7 @@ def run_search_experiments() -> tuple[list[dict], list[dict]]:
             }
         )
 
-    aggregated_rows = raw_rows[:]  # deterministic search runs, so raw = summary here
+    aggregated_rows = raw_rows[:]  # deterministic search runs, so raw = summary
     return raw_rows, aggregated_rows
 
 
@@ -262,7 +262,7 @@ def run_rl_experiments() -> tuple[list[dict], list[dict]]:
             agent=agent,
             game_factory=Connect4,
             opponent=opponent,
-            episodes=30000,
+            episodes=100000,
         )
 
         eval_summary = evaluate_rl_agent_in_matchup(

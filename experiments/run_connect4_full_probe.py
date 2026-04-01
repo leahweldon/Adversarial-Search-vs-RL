@@ -21,7 +21,7 @@ def make_opening_board() -> Connect4:
 def make_midgame_board() -> Connect4:
     game = Connect4()
 
-    # Fixed mid-game position chosen to be non-terminal and reasonably rich
+    # Fixed mid-game position chosen to be non-terminal
     # Board filled directly to keep probe reproducible
     game.board = [
         [0, 0, 0, 0, 0, 0, 0],

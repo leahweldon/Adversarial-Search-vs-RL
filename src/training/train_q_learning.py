@@ -37,6 +37,34 @@ def _reward_from_result(result: int, learner_player: int) -> float:
     return -1.0
 
 
+def _connect4_shape_reward(game: Connect4, player: int) -> float:
+    """small bonus for 3-in-a-row threats, penalty if opponent has one"""
+    board = game.board
+    rows, cols = game.rows, game.cols
+    opponent = -player
+    reward = 0.0
+    windows = []
+    for row in range(rows):
+        for col in range(cols - 3):
+            windows.append([board[row][col + i] for i in range(4)])
+    for row in range(rows - 3):
+        for col in range(cols):
+            windows.append([board[row + i][col] for i in range(4)])
+    for row in range(rows - 3):
+        for col in range(cols - 3):
+            windows.append([board[row + i][col + i] for i in range(4)])
+    for row in range(3, rows):
+        for col in range(cols - 3):
+            windows.append([board[row - i][col + i] for i in range(4)])
+    for window in windows:
+        pc, oc, ec = window.count(player), window.count(opponent), window.count(0)
+        if pc == 3 and ec == 1:
+            reward += 0.05
+        elif oc == 3 and ec == 1:
+            reward -= 0.05
+    return reward
+
+
 def train_q_learning_agent(
     agent: QLearningAgent,
     game_factory: GameFactory,
@@ -45,6 +73,7 @@ def train_q_learning_agent(
     learner_player: int = 1,
     epsilon_decay: float = 0.9995,
     min_epsilon: float = 0.05,
+    use_reward_shaping: bool = False,
 ) -> TrainingStats:
     """Train learner against a fixed opponent """
     stats = TrainingStats()
@@ -62,6 +91,9 @@ def train_q_learning_agent(
             state_key = game.get_state_key()
             action = agent.select_action(game, training=True)
             game.apply_action(action)
+
+            # shaping measured here - after learner's move, before opponent acts
+            step_reward = _connect4_shape_reward(game, learner_player) if use_reward_shaping and isinstance(game, Connect4) else 0.0
 
             # If learner ends the game immediately, update with terminal reward
             if game.is_terminal():
@@ -102,7 +134,6 @@ def train_q_learning_agent(
             next_state_key = game.get_state_key()
             next_legal_actions = game.available_actions()
 
-            step_reward = 0.0
             total_episode_reward += step_reward
 
             agent.update(
@@ -139,6 +170,7 @@ def train_q_learning_agent_mixed_seats(
     episodes: int,
     epsilon_decay: float = 0.9995,
     min_epsilon: float = 0.05,
+    use_reward_shaping: bool = False,
 ) -> TrainingStats:
     """
     Train same Q-learning agent while alternating whether it plays as
@@ -159,6 +191,7 @@ def train_q_learning_agent_mixed_seats(
             learner_player=learner_player,
             epsilon_decay=epsilon_decay,
             min_epsilon=min_epsilon,
+            use_reward_shaping=use_reward_shaping,
         )
 
         combined_stats.wins += episode_stats.wins

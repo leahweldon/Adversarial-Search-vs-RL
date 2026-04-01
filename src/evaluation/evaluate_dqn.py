@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Callable
+from typing import Callable, Tuple
 
 from src.agents.base_agent import BaseAgent
 from src.agents.dqn_agent import DQNAgent
@@ -60,3 +60,15 @@ def evaluate_dqn_agent(
         agent.set_epsilon(original_epsilon)
 
     return stats
+
+
+def evaluate_dqn_agent_by_seat(
+    agent: DQNAgent,
+    game_factory: GameFactory,
+    opponent: BaseAgent,
+    games: int,
+) -> Tuple[DQNEvaluationStats, DQNEvaluationStats]:
+    """evaluate separately as P1 and P2, returns (p1_stats, p2_stats)"""
+    p1_stats = evaluate_dqn_agent(agent, game_factory, opponent, games, learner_player=1)
+    p2_stats = evaluate_dqn_agent(agent, game_factory, opponent, games, learner_player=-1)
+    return p1_stats, p2_stats

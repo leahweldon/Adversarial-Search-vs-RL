@@ -21,33 +21,32 @@ class RLExperimentConfig:
     seeds: List[int]
     learner_players: List[int] = field(default_factory=lambda: [1, -1])
 
-
 TICTACTOE_SEARCH_CONFIG = SearchExperimentConfig(
     game_name="tictactoe",
-    evaluation_games=100,
+    evaluation_games=150,
     alternate_starting_player=True,
-    depth_limits=[None],  # full search for Tic Tac Toe
+    depth_limits=[None],
 )
 
 CONNECT4_SEARCH_CONFIG = SearchExperimentConfig(
     game_name="connect4",
-    evaluation_games=60,
+    evaluation_games=150,
     alternate_starting_player=True,
     depth_limits=[3, 4],
 )
 
 TICTACTOE_RL_CONFIG = RLExperimentConfig(
     game_name="tictactoe",
-    training_episodes=10000,
-    evaluation_games=200,
+    training_episodes=20000,
+    evaluation_games=1000,
     alternate_starting_player=True,
     seeds=[7, 21, 42],
 )
 
 CONNECT4_RL_CONFIG = RLExperimentConfig(
     game_name="connect4",
-    training_episodes=20000,
-    evaluation_games=200,
+    training_episodes=80000,
+    evaluation_games=1000,
     alternate_starting_player=True,
     seeds=[7, 21, 42],
 )

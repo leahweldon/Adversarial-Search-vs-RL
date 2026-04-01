@@ -1,0 +1,15 @@
+{
+  "type": "STRESS_TEST",
+  "tictactoe_games": 200,
+  "connect4_games": 200,
+  "tictactoe_q_learning_episodes": 30000,
+  "tictactoe_dqn_episodes": 50000,
+  "connect4_q_learning_episodes": 120000,
+  "connect4_dqn_episodes": 150000,
+  "dqn_hidden_size": 256,
+  "notes": [
+    "Very large training budgets used.",
+    "Separate model files used to preserve baseline and earlier stress-test results.",
+    "This run tests whether increased DQN capacity improves performance."
+  ]
+}

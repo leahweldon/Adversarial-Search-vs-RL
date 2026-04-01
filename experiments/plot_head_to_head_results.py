@@ -9,7 +9,7 @@ import pandas as pd
 def plot_head_to_head(csv_path: str, title: str, output_path: str) -> None:
     df = pd.read_csv(csv_path)
 
-    labels = [f"{row['agent_a']} vs {row['agent_b']}" for _, row in df.iterrows()]
+    labels = df["matchup"].tolist()
     a_vals = df["agent_a_win_rate"].tolist()
     b_vals = df["agent_b_win_rate"].tolist()
     d_vals = df["draw_rate"].tolist()

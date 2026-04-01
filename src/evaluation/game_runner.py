@@ -7,7 +7,7 @@ from src.agents.base_agent import BaseAgent
 
 def play_game(game: Any, agent_x: BaseAgent, agent_o: BaseAgent, render: bool = False) -> int:
     """
-    Play one full game and return the result from Player 1's perspective.
+    Play one full game and return result from Player 1's perspective
 
     Returns:
         1  -> Player 1 wins

@@ -1,9 +1,8 @@
-game,agent_a,agent_b,games,agent_a_win_rate,agent_b_win_rate,draw_rate,agent_a_avg_move_time,agent_b_avg_move_time,agent_a_nodes,agent_b_nodes,agent_a_cutoffs,agent_b_cutoffs,agent_a_max_depth,agent_b_max_depth
-connect4,minimax_depth3,alpha_beta_depth3,30,0.5,0.5,0.0,0.022225725706946968,0.009085273971302538,146745,60945,0,8565,3,3
-connect4,minimax_depth3,alpha_beta_depth4,30,0.5,0.5,0.0,0.030513417527011675,0.08045239342633674,87420,237330,0,31530,3,4
-connect4,minimax_depth3,tabular_q_learning,30,1.0,0.0,0.0,0.03169501998399937,3.8110162723430636e-05,73696,0,0,0,3,0
-connect4,minimax_depth3,dqn,30,1.0,0.0,0.0,0.030496256548212843,0.00013690276647962274,44400,0,0,0,3,0
-connect4,alpha_beta_depth3,alpha_beta_depth4,30,0.5,0.5,0.0,0.01763697601563763,0.08061874128761701,50910,237330,5310,31530,3,4
-connect4,alpha_beta_depth3,tabular_q_learning,30,1.0,0.0,0.0,0.016348281086937803,3.39464337570122e-05,40186,0,4339,0,3,0
-connect4,alpha_beta_depth3,dqn,30,1.0,0.0,0.0,0.013827085090451875,0.00011281150093834315,19650,0,2445,0,3,0
-connect4,tabular_q_learning,dqn,30,0.6333333333333333,0.36666666666666664,0.0,2.9612430534075185e-05,5.351946206896433e-05,0,0,0,0,0,0
+game,matchup,games,agent_a_win_rate,agent_b_win_rate,draw_rate,agent_a_avg_move_time,agent_b_avg_move_time
+connect4,minimax_depth3 vs alpha_beta_depth3,100,0.5,0.5,0.0,0.022767289126835143,0.008452934540950486
+connect4,minimax_depth3 vs alpha_beta_depth4,100,0.5,0.5,0.0,0.029935529915092046,0.06917808135127416
+connect4,minimax_depth3 vs tabular_q_learning,100,1.0,0.0,0.0,0.031101672807476118,3.288766499512245e-05
+connect4,minimax_depth3 vs dqn,100,1.0,0.0,0.0,0.03023877059913833,0.000136550007853657
+connect4,alpha_beta_depth3 vs tabular_q_learning,100,1.0,0.0,0.0,0.01468976662819466,3.00738366771252e-05
+connect4,alpha_beta_depth3 vs dqn,100,1.0,0.0,0.0,0.011175092483913018,6.336257816292346e-05
+connect4,tabular_q_learning vs dqn,100,0.64,0.36,0.0,2.79248596687234e-05,5.329218149608077e-05

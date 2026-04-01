@@ -53,6 +53,21 @@ def plot_search_nodes(search_csv: str, output_path: str) -> None:
     plt.savefig(output_path)
     plt.close()
 
+def plot_rl_only(rl_csv: str, output_path: str) -> None:
+    df = pd.read_csv(rl_csv)
+
+    labels = [f"{row['game']} | {row['algorithm']}" for _, row in df.iterrows()]
+    values = df["win_rate_mean"].tolist()
+
+    plt.figure(figsize=(10, 6))
+    plt.bar(labels, values)
+    plt.xticks(rotation=45, ha="right")
+    plt.ylabel("Mean win rate")
+    plt.title("RL Algorithm Comparison")
+    plt.tight_layout()
+    plt.savefig(output_path)
+    plt.close()
+
 
 def main() -> None:
     output_dir = Path("results/final/plots")
@@ -73,10 +88,16 @@ def main() -> None:
         output_path=str(output_dir / "search_nodes.png"),
     )
 
+    plot_rl_only(
+        rl_csv="results/final/rl_summary_results.csv",
+        output_path=str(output_dir / "rl_only_comparison.png"),
+    )
+
     print("\nSaved final plots:")
     print("- results/final/plots/master_win_rates.png")
     print("- results/final/plots/search_efficiency.png")
     print("- results/final/plots/search_nodes.png")
+    print("- results/final/plots/rl_only_comparison.png")
 
 
 if __name__ == "__main__":

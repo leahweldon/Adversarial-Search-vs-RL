@@ -10,7 +10,7 @@ from src.games.tictactoe import TicTacToe
 
 class DefaultOpponent(BaseAgent):
     """
-    A opponent for both Tic Tac Toe and Connect 4.
+    A opponent for both Tic Tac Toe and Connect 4
 
     1. take a winning move immediately if one exists
     2. block the opponent's immediate winning move if needed
@@ -41,7 +41,7 @@ class DefaultOpponent(BaseAgent):
         if blocking_move is not None:
             return blocking_move
 
-        # After immediate tactics, prefer strong board positions.
+        # After immediate tactics, prefer strong board positions
         preferred_order = [4, 0, 2, 6, 8, 1, 3, 5, 7]
         for action in preferred_order:
             if action in legal_actions:
@@ -61,11 +61,11 @@ class DefaultOpponent(BaseAgent):
             return blocking_move
 
         # In Connect 4, central columns are generally stronger because they are part
-        # of more possible four-in-a-row patterns.
+        # of more possible four-in-a-row patterns
         centre_preference = self._ordered_by_centre_bias(legal_actions, game.cols)
 
-        # Among equally legal moves, we slightly prefer actions that create more
-        # pressure for the current player on the next turn.
+        # Among equally legal moves, slightly prefer actions that create more
+        # pressure for current player on the next turn
         best_score = None
         best_actions: List[int] = []
 
@@ -83,7 +83,7 @@ class DefaultOpponent(BaseAgent):
 
     def _find_immediate_win(self, game: TicTacToe | Connect4, player: int) -> Optional[int]:
         """
-        Return a move that gives player an immediate win, if one exists.
+        Return move that gives player an immediate win, if one exists
 
         """
         for action in game.legal_actions():
@@ -98,14 +98,14 @@ class DefaultOpponent(BaseAgent):
 
     def _ordered_by_centre_bias(self, legal_actions: List[int], cols: int) -> List[int]:
         """
-        Sort legal columns by distance from the centre column.
+        Sort legal columns by distance from centre column
         """
         centre = cols // 2
         return sorted(legal_actions, key=lambda col: (abs(col - centre), col))
 
     def _score_connect4_position(self, game: Connect4, player: int) -> int:
         """
-        Lightweight evaluation used only by  default opponent.
+        Lightweight evaluation used only by default opponent
 
         The scoring rewards:
         - occupying the centre
@@ -152,7 +152,7 @@ class DefaultOpponent(BaseAgent):
 
     def _score_window(self, window: List[int], player: int, opponent: int) -> int:
         """
-        Give small positional value to a 4-cell window.
+        Give small positional value to a 4-cell window
         """
         player_count = window.count(player)
         opponent_count = window.count(opponent)

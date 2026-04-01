@@ -10,15 +10,15 @@ Action = int
 @dataclass
 class Connect4:
     """
-    Standard 6x7 Connect 4 environment.
+    Standard 6x7 Connect 4 environment
 
     Board values:
     -  1 for player X
     - -1 for player O
     -  0 for empty
 
-    Rows are indexed top to bottom.
-    Columns are indexed left to right.
+    Rows are indexed top to bottom
+    Columns are indexed left to right
     """
 
     rows: int = 6
@@ -27,7 +27,7 @@ class Connect4:
     current_player: Player = 1
 
     def clone(self) -> "Connect4":
-        """Return a deep copy of the game state."""
+        """Return deep copy of game state"""
         return Connect4(
             rows=self.rows,
             cols=self.cols,
@@ -36,12 +36,12 @@ class Connect4:
         )
 
     def reset(self) -> None:
-        """Reset the game back to an empty board."""
+        """Reset game back to an empty board"""
         self.board = [[0] * self.cols for _ in range(self.rows)]
         self.current_player = 1
 
     def legal_actions(self) -> List[Action]:
-        """Return columns that are not full."""
+        """Return columns that are not full"""
         if self.is_terminal():
             return []
         return [col for col in range(self.cols) if self.board[0][col] == 0]
@@ -51,7 +51,7 @@ class Connect4:
         return self.legal_actions()
 
     def apply_action(self, action: Action) -> None:
-        """Drop a piece into the selected column."""
+        """Drop a piece into selected column"""
         if self.is_terminal():
             raise ValueError("Cannot play a move in a finished game.")
 
@@ -70,13 +70,13 @@ class Connect4:
         raise RuntimeError("Could not apply action even though the column looked legal.")
 
     def next_state(self, action: Action) -> "Connect4":
-        """Return the state that results from taking an action."""
+        """Return state that results from taking an action"""
         new_state = self.clone()
         new_state.apply_action(action)
         return new_state
 
     def winner(self) -> Optional[Player]:
-        """Return the winner if there is one, otherwise None."""
+        """Return winner if there is one, otherwise None"""
         # Horizontal
         for row in range(self.rows):
             for col in range(self.cols - 3):
@@ -116,16 +116,16 @@ class Connect4:
         return None
 
     def is_draw(self) -> bool:
-        """Return True if the board is full and nobody has won."""
+        """Return True if board is full and nobody has won"""
         return self.winner() is None and all(self.board[0][col] != 0 for col in range(self.cols))
 
     def is_terminal(self) -> bool:
-        """Return True if the game has ended."""
+        """Return True if game has ended"""
         return self.winner() is not None or self.is_draw()
 
     def result(self) -> int:
         """
-        Return the game result from Player 1's perspective.
+        Return game result from Player 1's perspective
 
         1  -> Player 1 won
         -1 -> Player -1 won
@@ -138,15 +138,15 @@ class Connect4:
 
     def get_state_key(self) -> Tuple[int, ...]:
         """
-        Return a hashable representation of the state.
+        Return hashable representation of state
 
-        Including current_player is useful for Q-learning.
+        Including current_player is useful for Q-learning
         """
         flat_board = [cell for row in self.board for cell in row]
         return tuple(flat_board + [self.current_player])
 
     def render(self) -> None:
-        """Print the board in a readable format."""
+        """Print board in readable format"""
         symbols = {1: "X", -1: "O", 0: "."}
         for row in self.board:
             print(" ".join(symbols[cell] for cell in row))

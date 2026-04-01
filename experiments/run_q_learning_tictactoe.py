@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from src.agents.default_opponent import DefaultOpponent
 from src.agents.q_learning_agent import QLearningAgent
-from src.evaluation.evaluate_q_learning import evaluate_q_agent
+from src.evaluation.evaluate_q_learning import evaluate_q_agent, evaluate_q_agent_by_seat
 from src.games.tictactoe import TicTacToe
 from src.training.train_q_learning import train_q_learning_agent_mixed_seats
 from src.utils.io_utils import save_dict_rows_to_csv
@@ -20,7 +20,7 @@ def main() -> None:
 
     opponent = DefaultOpponent(name="default_opponent", seed=42)
 
-    episodes = 10000
+    episodes = 50000
 
     train_stats = train_q_learning_agent_mixed_seats(
         agent=agent,
@@ -39,6 +39,13 @@ def main() -> None:
         learner_player=1,
     )
 
+    p1_stats, p2_stats = evaluate_q_agent_by_seat(
+        agent=agent,
+        game_factory=TicTacToe,
+        opponent=opponent,
+        games=250,
+    )
+
     agent.save("results/models/tictactoe_q_learning_seed42.json")
 
     print("\nTraining summary")
@@ -47,11 +54,15 @@ def main() -> None:
     print(f"Losses: {train_stats.losses}")
     print(f"Stored states: {agent.policy_size()}")
 
-    print("\nEvaluation summary")
+    print("\nEvaluation summary (as P1)")
     print(f"Wins:   {eval_stats.wins}")
     print(f"Draws:  {eval_stats.draws}")
     print(f"Losses: {eval_stats.losses}")
     print(f"Win rate: {eval_stats.win_rate:.3f}")
+
+    print("\nEvaluation by seat")
+    print(f"  As P1 - Wins: {p1_stats.wins}  Draws: {p1_stats.draws}  Losses: {p1_stats.losses}  Win rate: {p1_stats.win_rate:.3f}")
+    print(f"  As P2 - Wins: {p2_stats.wins}  Draws: {p2_stats.draws}  Losses: {p2_stats.losses}  Win rate: {p2_stats.win_rate:.3f}")
 
     rows = []
     for episode_index, (reward, epsilon, outcome) in enumerate(
@@ -87,6 +98,8 @@ def main() -> None:
             "eval_losses": eval_stats.losses,
             "eval_win_rate": eval_stats.win_rate,
             "policy_size": agent.policy_size(),
+            "p1_win_rate": p1_stats.win_rate,
+            "p2_win_rate": p2_stats.win_rate,
         }
     ]
 
