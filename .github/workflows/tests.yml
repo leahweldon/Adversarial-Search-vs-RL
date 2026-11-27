@@ -26,3 +26,12 @@ jobs:
 
       - name: Run tests
         run: python -m pytest -q tests
+
+      - name: Redraw README animation
+        run: python scripts/readme_animation.py
+
+      - name: Upload animation
+        uses: actions/upload-artifact@v4
+        with:
+          name: readme-animation
+          path: docs/assets/connect4-alpha-beta.gif
