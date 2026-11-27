@@ -6,9 +6,11 @@ Minimax, alpha-beta pruning, tabular Q-learning and Deep Q-Networks, built from 
 
 When should a game-playing agent search the game tree, and when can a learned policy compete? Tic Tac Toe is small enough to search exhaustively; Connect 4 isn't. This project implements both families of agent, trains the learners over 50,000 episodes, and evaluates everything against fixed opponents and in 100-game head-to-head matches. Individual project for CS7IS2 Artificial Intelligence at Trinity College Dublin (2026).
 
-![Connect 4 head-to-head results](docs/assets/connect4-head-to-head.png)
+<p align="center">
+  <img src="docs/assets/connect4-alpha-beta.gif" alt="Depth-3 alpha-beta search playing a full game of Connect 4 against the rule-based opponent" width="760">
+</p>
 
-*Connect 4, 100 games per pairing: depth-limited search beat both learned agents in every single game.*
+*A full game of Connect 4: depth-3 alpha-beta (red) against the rule-based opponent (gold). At every turn the same position is also searched with plain Minimax; both pick identical moves, but alpha-beta searches 46% fewer positions over the game.*
 
 ## Results
 
@@ -32,6 +34,12 @@ When should a game-playing agent search the game tree, and when can a learned po
 | Tic Tac Toe | DQN | Optimal search | 0% (50% draws) |
 | Tic Tac Toe | Tabular Q-learning | Optimal search | 0% (13–16% draws) |
 
+**Head to head in Connect 4** (100 games per pairing, alternating who moves first)
+
+![Connect 4 head-to-head results](docs/assets/connect4-head-to-head.png)
+
+*Depth-limited search beat both learned agents in every game.*
+
 ![Win, draw and loss rates for every agent across both games](docs/assets/overall-comparison.png)
 
 ## Key findings
@@ -39,7 +47,7 @@ When should a game-playing agent search the game tree, and when can a learned po
 1. **Alpha-beta pruning is free performance.** It plays identically to Minimax but visits 96% fewer nodes in Tic Tac Toe and runs about 20× faster per move.
 2. **Full-depth search hits a wall in Connect 4.** After 30 minutes and more than 26 million nodes, neither Minimax nor alpha-beta finished choosing a *single* opening move, so depth limits and a heuristic evaluation (centre control and open 2- and 3-in-a-row windows) are essential.
 3. **Deeper isn't always better.** Alpha-beta at depth 4 won *less* often than at depth 3 (95% vs 100%) at 4× the cost per move: more frontier positions means more accumulated error from the hand-crafted heuristic.
-4. **Learned agents don't generalise beyond their training opponent.** Both RL agents beat a random Connect 4 player most of the time, yet lost every game against depth-3 search. A strong training-time win rate is not the same as strong play.
+4. **Search dominates Connect 4.** Both RL agents beat a random player most of the time (78–87%), yet depth-3 search won every game against them. A strong win rate against a weak opponent is not the same as strong play.
 5. **DQN generalises better than a lookup table.** In Tic Tac Toe, DQN held optimal search to a draw in half its games; tabular Q-learning managed draws in only 13–16%.
 
 ## How it works
@@ -54,6 +62,7 @@ When should a game-playing agent search the game tree, and when can a learned po
 | Training | [`src/training/`](src/training/) | Q-learning and DQN training loops |
 | Evaluation | [`src/evaluation/`](src/evaluation/) | Game runner, alternating-seat matchups, aggregation |
 | Experiments | [`experiments/`](experiments/) | One script per experiment, plus head-to-head suites and report figures |
+| README animation | [`scripts/readme_animation.py`](scripts/readme_animation.py) | Replays the game above with the project's own agents and search statistics |
 
 ## Getting started
 
@@ -86,6 +95,7 @@ Training runs and full-depth search experiments take minutes to hours; the Conne
 │   ├── evaluation/     # Matchups and metrics
 │   └── utils/
 ├── experiments/        # Experiment and plotting scripts
+├── scripts/            # README animation
 ├── tests/              # 36 unit tests
 ├── results/final/      # Result tables and metadata behind the report
 └── docs/
